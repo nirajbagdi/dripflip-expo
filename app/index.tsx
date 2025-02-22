@@ -1,15 +1,38 @@
-import { Text, View } from 'react-native';
+import { View, ImageBackground, TouchableOpacity } from 'react-native';
+import { CardItem } from './components';
+import styles from '../assets/styles';
+import DEMO from '../assets/data';
+import Icon from './components/Icon';
 
-export default function Index() {
+const Index = () => {
     return (
-        <View
-            style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}
+        <ImageBackground
+            source={require('../assets/images/bg.png')}
+            style={styles.bg}
         >
-            <Text>Edit app/index.tsx to edit this screen.</Text>
-        </View>
+            <TouchableOpacity
+                style={{
+                    position: 'absolute',
+                    top: 60,
+                    right: 30,
+                }}
+            >
+                <Icon name="cart" size={30} color="#6741d9" />
+            </TouchableOpacity>
+
+            <View style={styles.containerHome}>
+                {DEMO.map((item) => (
+                    <CardItem
+                        key={item.id}
+                        hasActions
+                        image={item.image}
+                        name={item.name}
+                        description={item.description}
+                    />
+                ))}
+            </View>
+        </ImageBackground>
     );
-}
+};
+
+export default Index;
