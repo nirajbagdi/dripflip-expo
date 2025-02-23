@@ -14,22 +14,22 @@ model User {
   role         UserRole
   profileImage String?
 
-  preferences  Preferences?
-  cart         Cart?
-  orders       Order[]
-  swipeActions SwipeAction[]
-  rewards      Reward[]
+//   preferences  Preferences?
+//   cart         Cart?
+//   orders       Order[]
+//   swipeActions SwipeAction[]
+//   rewards      Reward[]
 }
 
-model Preferences {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String   @unique @db.ObjectId
-  categories     String[] // Preferred categories like ["shoes", "streetwear"]
-  brands         String[] // Preferred brands
-  sustainability Boolean // Whether the user prefers eco-friendly products
+// model Preferences {
+//   id             String   @id @default(auto()) @map("_id") @db.ObjectId
+//   userId         String   @unique @db.ObjectId
+//   categories     String[] // Preferred categories like ["shoes", "streetwear"]
+//   brands         String[] // Preferred brands
+//   sustainability Boolean // Whether the user prefers eco-friendly products
 
-  user User @relation(fields: [userId], references: [id])
-}
+//   user User @relation(fields: [userId], references: [id])
+// }
 
 model Product {
   id                  String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -40,97 +40,93 @@ model Product {
   category            String
   image               String
   stock               Int
-  sustainabilityBadge String[] // ["Eco-Friendly", "Recyclable"]
-  addedBy             String // Merchant ID (if applicable)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-  merchantId          String   @db.ObjectId
+  sustainabilityBadge String[]
 
-  swipeActions SwipeAction[]
-  CartItem     CartItem[]
-  OrderItem    OrderItem[]
+//   swipeActions SwipeAction[]
+//   CartItem     CartItem[]
+//   OrderItem    OrderItem[]
 
-  Merchant Merchant @relation(fields: [merchantId], references: [id])
+//   Merchant Merchant @relation(fields: [merchantId], references: [id])
 }
 
-model SwipeAction {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String @db.ObjectId
-  productId String @db.ObjectId
+// model SwipeAction {
+//   id        String @id @default(auto()) @map("_id") @db.ObjectId
+//   userId    String @db.ObjectId
+//   productId String @db.ObjectId
 
-  action  SwipeType // "LIKE" or "IGNORE"
-  user    User      @relation(fields: [userId], references: [id])
-  product Product   @relation(fields: [productId], references: [id])
-}
+//   action  SwipeType // "LIKE" or "IGNORE"
+//   user    User      @relation(fields: [userId], references: [id])
+//   product Product   @relation(fields: [productId], references: [id])
+// }
 
-enum SwipeType {
-  LIKE
-  IGNORE
-}
+// enum SwipeType {
+//   LIKE
+//   IGNORE
+// }
 
-model Cart {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @unique @db.ObjectId
+// model Cart {
+//   id     String @id @default(auto()) @map("_id") @db.ObjectId
+//   userId String @unique @db.ObjectId
 
-  items CartItem[]
-  user  User       @relation(fields: [userId], references: [id])
+//   items CartItem[]
+//   user  User       @relation(fields: [userId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
 
-model CartItem {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
-  cartId    String @db.ObjectId
-  productId String @db.ObjectId
-  quantity  Int    @default(1)
+// model CartItem {
+//   id        String @id @default(auto()) @map("_id") @db.ObjectId
+//   cartId    String @db.ObjectId
+//   productId String @db.ObjectId
+//   quantity  Int    @default(1)
 
-  cart    Cart    @relation(fields: [cartId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
-}
+//   cart    Cart    @relation(fields: [cartId], references: [id])
+//   product Product @relation(fields: [productId], references: [id])
+// }
 
-model Order {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @db.ObjectId
-  total  Float
+// model Order {
+//   id     String @id @default(auto()) @map("_id") @db.ObjectId
+//   userId String @db.ObjectId
+//   total  Float
 
-  items  OrderItem[]
-  status OrderStatus
-  user   User        @relation(fields: [userId], references: [id])
-}
+//   items  OrderItem[]
+//   status OrderStatus
+//   user   User        @relation(fields: [userId], references: [id])
+// }
 
-model OrderItem {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
-  orderId   String @db.ObjectId
-  productId String @db.ObjectId
-  quantity  Int    @default(1)
+// model OrderItem {
+//   id        String @id @default(auto()) @map("_id") @db.ObjectId
+//   orderId   String @db.ObjectId
+//   productId String @db.ObjectId
+//   quantity  Int    @default(1)
 
-  order   Order   @relation(fields: [orderId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
-}
+//   order   Order   @relation(fields: [orderId], references: [id])
+//   product Product @relation(fields: [productId], references: [id])
+// }
 
-enum OrderStatus {
-  PENDING
-  SHIPPED
-  DELIVERED
-  CANCELED
-}
+// enum OrderStatus {
+//   PENDING
+//   SHIPPED
+//   DELIVERED
+//   CANCELED
+// }
 
-model Reward {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @db.ObjectId
-  points Int    @default(0)
+// model Reward {
+//   id     String @id @default(auto()) @map("_id") @db.ObjectId
+//   userId String @db.ObjectId
+//   points Int    @default(0)
 
-  user User @relation(fields: [userId], references: [id])
-}
+//   user User @relation(fields: [userId], references: [id])
+// }
 
-model Merchant {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  username String @unique
-  password String
+// model Merchant {
+//   id       String @id @default(auto()) @map("_id") @db.ObjectId
+//   username String @unique
+//   password String
 
-  products Product[]
-}
+//   products Product[]
+// }
 
 enum UserRole {
   Admin

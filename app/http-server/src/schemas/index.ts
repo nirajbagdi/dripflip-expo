@@ -13,6 +13,30 @@ export const authSchemas = {
     }),
 };
 
+export const productSchemas = {
+    create: z.object({
+        name: z.string(),
+        description: z.string().optional(),
+        price: z.number().positive(),
+        brand: z.string(),
+        category: z.string(),
+        image: z.string().url(),
+        stock: z.number().int(),
+        sustainabilityBadge: z.array(z.string()).optional(),
+    }),
+
+    update: z.object({
+        name: z.string().optional(),
+        description: z.string().optional(),
+        price: z.number().positive().optional(),
+        brand: z.string().optional(),
+        category: z.string().optional(),
+        image: z.string().url().optional(),
+        stock: z.number().int().optional(),
+        sustainabilityBadge: z.array(z.string()).optional(),
+    }),
+};
+
 declare global {
     namespace Express {
         export interface Request {

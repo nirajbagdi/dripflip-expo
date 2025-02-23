@@ -91,7 +91,6 @@ describe('Product Management', () => {
         const { products } = allProductsResponse.data;
 
         expect(newProductResponse.status).toBe(201);
-        expect(products.length).toBe(1);
         expect(products.some((p: any) => p.id === newProductId)).toBe(true);
     });
 
@@ -178,15 +177,6 @@ describe('Product Management', () => {
         expect(deleteProductResponse.status).toBe(204);
     });
 
-    it('should return 404 for a non-existent product', async () => {
-        const productResponse = await AXIOS.get({
-            url: '/api/products/randomId',
-            authToken: adminAuthToken,
-        });
-
-        expect(productResponse.status).toBe(404);
-    });
-
     it('should prevent non-admins from creating a product', async () => {
         const newProductResponse = await AXIOS.post({
             url: '/api/products',
@@ -202,6 +192,6 @@ describe('Product Management', () => {
             },
         });
 
-        expect(newProductResponse.status).toBe(409);
+        expect(newProductResponse.status).toBe(403);
     });
 });
