@@ -132,3 +132,5 @@ enum UserRole {
   Admin
   User
 }
+
+// DATABASE_URL="mongodb+srv://nirajbagdi:nirajbagdi@dripflip.nlvt3.mongodb.net/test?retryWrites=true&w=majority&appName=DripFlip"
