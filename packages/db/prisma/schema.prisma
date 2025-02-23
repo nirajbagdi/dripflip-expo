@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String  @id @default(cuid()) @map("_id")
+  name         String
+  email        String  @unique
+  password     String
+  profileImage String?
+
+  preferences  Preferences?
+  cart         Cart?
+  orders       Order[]
+  swipeActions SwipeAction[]
+  rewards      Reward[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Preferences {
+  id             String   @id @default(cuid()) @map("_id")
+  userId         String   @unique
+  categories     String[] // Preferred categories like ["shoes", "streetwear"]
+  brands         String[] // Preferred brands
+  sustainability Boolean // Whether the user prefers eco-friendly products
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Product {
+  id                  String   @id @default(cuid()) @map("_id")
+  name                String
+  description         String?
+  price               Int
+  brand               String
+  category            String
+  image               String
+  stock               Int
+  sustainabilityBadge String[] // ["Eco-Friendly", "Recyclable"]
+  addedBy             String // Merchant ID (if applicable)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  merchantId          String
+
+  swipeActions SwipeAction[]
+  CartItem     CartItem[]
+  OrderItem    OrderItem[]
+
+  Merchant Merchant @relation(fields: [merchantId], references: [id])
+}
+
+model SwipeAction {
+  id        String @id @default(cuid()) @map("_id")
+  userId    String
+  productId String
+
+  action  SwipeType // "LIKE" or "IGNORE"
+  user    User      @relation(fields: [userId], references: [id])
+  product Product   @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+enum SwipeType {
+  LIKE
+  IGNORE
+}
+
+model Cart {
+  id     String @id @default(cuid()) @map("_id")
+  userId String @unique
+
+  items CartItem[]
+  user  User       @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CartItem {
+  id        String @id @default(cuid()) @map("_id")
+  cartId    String
+  productId String
+  quantity  Int    @default(1)
+
+  cart    Cart    @relation(fields: [cartId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Order {
+  id     String @id @default(cuid()) @map("_id")
+  userId String
+  total  Int
+
+  items  OrderItem[]
+  status OrderStatus
+  user   User        @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model OrderItem {
+  id        String @id @default(cuid()) @map("_id")
+  orderId   String
+  productId String
+  quantity  Int    @default(1)
+
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+
+enum OrderStatus {
+  PENDING
+  SHIPPED
+  DELIVERED
+  CANCELED
+}
+
+model Reward {
+  id     String @id @default(cuid()) @map("_id")
+  userId String
+  points Int    @default(0)
+
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Merchant {
+  id       String @id @default(cuid()) @map("_id")
+  name     String
+  email    String @unique
+  password String
+
+  products Product[]
+
+  createdAt DateTime @default(now())
+}

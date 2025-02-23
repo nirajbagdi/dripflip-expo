@@ -107,7 +107,7 @@ export async function signup({
     type?: 'admin' | 'user';
 }) {
     return await AXIOS.post({
-        url: '/api/v1/signup',
+        url: '/api/auth/signup',
         data: { username, password, type },
     });
 }
@@ -120,7 +120,7 @@ export async function signin({
     password: string;
 }) {
     return await AXIOS.post({
-        url: '/api/v1/signin',
+        url: '/api/auth/signin',
         data: { username, password },
     });
 }
