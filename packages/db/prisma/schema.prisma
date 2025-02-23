@@ -38,7 +38,7 @@ model Product {
   id                  String   @id @default(cuid()) @map("_id")
   name                String
   description         String?
-  price               Int
+  price               Float
   brand               String
   category            String
   image               String
@@ -97,7 +97,7 @@ model CartItem {
 model Order {
   id     String @id @default(cuid()) @map("_id")
   userId String
-  total  Int
+  total  Float
 
   items  OrderItem[]
   status OrderStatus
