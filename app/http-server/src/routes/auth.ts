@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 import dbClient from '@repo/db/client';
 import { createJwt } from '@repo/jwt-utils';
@@ -26,6 +26,15 @@ authRouter.post('/signup', async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(parsed.data.password, SALT_ROUNDS);
 
+        const existingUser = await dbClient.user.findUnique({
+            where: { username: parsed.data.username },
+        });
+
+        if (existingUser) {
+            res.status(400).json({ message: 'Username already exists.' });
+            return;
+        }
+
         const newUser = await dbClient.user.create({
             data: {
                 username: parsed.data.username,
@@ -36,6 +45,7 @@ authRouter.post('/signup', async (req, res) => {
 
         res.status(200).json({ userId: newUser.id });
     } catch (error) {
+        console.log(error);
         res.status(400).json({ message: 'User already exists' });
     }
 });

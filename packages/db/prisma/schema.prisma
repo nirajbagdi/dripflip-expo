@@ -8,10 +8,10 @@ datasource db {
 }
 
 model User {
-  id           String  @id @default(cuid()) @map("_id")
-  name         String
-  email        String  @unique
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  username     String   @unique
   password     String
+  role         UserRole
   profileImage String?
 
   preferences  Preferences?
@@ -19,14 +19,11 @@ model User {
   orders       Order[]
   swipeActions SwipeAction[]
   rewards      Reward[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model Preferences {
-  id             String   @id @default(cuid()) @map("_id")
-  userId         String   @unique
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   @unique @db.ObjectId
   categories     String[] // Preferred categories like ["shoes", "streetwear"]
   brands         String[] // Preferred brands
   sustainability Boolean // Whether the user prefers eco-friendly products
@@ -35,7 +32,7 @@ model Preferences {
 }
 
 model Product {
-  id                  String   @id @default(cuid()) @map("_id")
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
   name                String
   description         String?
   price               Float
@@ -47,7 +44,7 @@ model Product {
   addedBy             String // Merchant ID (if applicable)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
-  merchantId          String
+  merchantId          String   @db.ObjectId
 
   swipeActions SwipeAction[]
   CartItem     CartItem[]
@@ -57,15 +54,13 @@ model Product {
 }
 
 model SwipeAction {
-  id        String @id @default(cuid()) @map("_id")
-  userId    String
-  productId String
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String @db.ObjectId
+  productId String @db.ObjectId
 
   action  SwipeType // "LIKE" or "IGNORE"
   user    User      @relation(fields: [userId], references: [id])
   product Product   @relation(fields: [productId], references: [id])
-
-  createdAt DateTime @default(now())
 }
 
 enum SwipeType {
@@ -74,8 +69,8 @@ enum SwipeType {
 }
 
 model Cart {
-  id     String @id @default(cuid()) @map("_id")
-  userId String @unique
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @unique @db.ObjectId
 
   items CartItem[]
   user  User       @relation(fields: [userId], references: [id])
@@ -85,9 +80,9 @@ model Cart {
 }
 
 model CartItem {
-  id        String @id @default(cuid()) @map("_id")
-  cartId    String
-  productId String
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  cartId    String @db.ObjectId
+  productId String @db.ObjectId
   quantity  Int    @default(1)
 
   cart    Cart    @relation(fields: [cartId], references: [id])
@@ -95,21 +90,19 @@ model CartItem {
 }
 
 model Order {
-  id     String @id @default(cuid()) @map("_id")
-  userId String
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
   total  Float
 
   items  OrderItem[]
   status OrderStatus
   user   User        @relation(fields: [userId], references: [id])
-
-  createdAt DateTime @default(now())
 }
 
 model OrderItem {
-  id        String @id @default(cuid()) @map("_id")
-  orderId   String
-  productId String
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  orderId   String @db.ObjectId
+  productId String @db.ObjectId
   quantity  Int    @default(1)
 
   order   Order   @relation(fields: [orderId], references: [id])
@@ -124,22 +117,22 @@ enum OrderStatus {
 }
 
 model Reward {
-  id     String @id @default(cuid()) @map("_id")
-  userId String
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
   points Int    @default(0)
 
   user User @relation(fields: [userId], references: [id])
-
-  createdAt DateTime @default(now())
 }
 
 model Merchant {
-  id       String @id @default(cuid()) @map("_id")
-  name     String
-  email    String @unique
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  username String @unique
   password String
 
   products Product[]
+}
 
-  createdAt DateTime @default(now())
+enum UserRole {
+  Admin
+  User
 }
