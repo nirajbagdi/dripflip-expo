@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import dbClient from '@repo/db/client';
 import userMiddleware from '../middleware/user';
+import { cartSchemas } from '../schemas';
 
 export const cartRouter = Router();
 
@@ -29,7 +30,14 @@ cartRouter.get('/', userMiddleware, async (req, res) => {
 });
 
 cartRouter.post('/items', userMiddleware, async (req, res) => {
-    const { productId, quantity } = req.body;
+    const parsed = cartSchemas.addItem.safeParse(req.body);
+
+    if (!parsed.success) {
+        res.status(400).json({ message: 'Invalid request body' });
+        return;
+    }
+
+    const { productId, quantity } = parsed.data;
 
     try {
         let cart = await dbClient.cart.findFirst({
@@ -71,8 +79,15 @@ cartRouter.post('/items', userMiddleware, async (req, res) => {
 });
 
 cartRouter.put('/items/:itemId', userMiddleware, async (req, res) => {
+    const parsed = cartSchemas.updateItem.safeParse(req.body);
+
+    if (!parsed.success) {
+        res.status(400).json({ message: 'Invalid request body' });
+        return;
+    }
+
     const { itemId } = req.params;
-    const { quantity } = req.body;
+    const { quantity } = parsed.data;
 
     try {
         const updated = await dbClient.cartItem.update({

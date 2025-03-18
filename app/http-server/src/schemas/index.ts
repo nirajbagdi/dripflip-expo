@@ -37,6 +37,17 @@ export const productSchemas = {
     }),
 };
 
+export const cartSchemas = {
+    addItem: z.object({
+        productId: z.string(),
+        quantity: z.number().int().positive(),
+    }),
+
+    updateItem: z.object({
+        quantity: z.number().int().positive(),
+    }),
+};
+
 declare global {
     namespace Express {
         export interface Request {
