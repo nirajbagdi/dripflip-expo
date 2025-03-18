@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import { View } from 'react-native';
 
@@ -26,4 +26,4 @@ Card.defaultProps = {
     onSwipedBottom: () => {},
 };
 
-export default Card;
+export default memo(Card);

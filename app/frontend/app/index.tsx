@@ -34,7 +34,7 @@ const Index = () => {
                     ref={(newSwiper): void => setSwiper(newSwiper)}
                 >
                     {DEMO.map((item) => (
-                        <Card key={item.id}>
+                        <Card key={`card-${item.id}`}>
                             <CardItem
                                 hasActions
                                 image={item.image}
