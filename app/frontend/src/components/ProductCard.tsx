@@ -1,5 +1,4 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { Link } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 type ProductCardProps = {
@@ -15,23 +14,21 @@ type ProductCardProps = {
 
 export function ProductCard({ product }: ProductCardProps) {
     return (
-        <Link href={`/product/${product.id}`} asChild>
-            <TouchableOpacity style={styles.container}>
-                <Image source={{ uri: product.image }} style={styles.image} />
-                {product.sustainabilityBadge.length > 0 && (
-                    <View style={styles.badge}>
-                        <Ionicons name="leaf" size={12} color="green" />
-                    </View>
-                )}
-                <View style={styles.info}>
-                    <Text style={styles.brand}>{product.brand}</Text>
-                    <Text style={styles.name} numberOfLines={1}>
-                        {product.name}
-                    </Text>
-                    <Text style={styles.price}>${product.price}</Text>
+        <TouchableOpacity style={styles.container}>
+            <Image source={{ uri: product.image }} style={styles.image} />
+            {product.sustainabilityBadge.length > 0 && (
+                <View style={styles.badge}>
+                    <Ionicons name="leaf" size={12} color="green" />
                 </View>
-            </TouchableOpacity>
-        </Link>
+            )}
+            <View style={styles.info}>
+                <Text style={styles.brand}>{product.brand}</Text>
+                <Text style={styles.name} numberOfLines={1}>
+                    {product.name}
+                </Text>
+                <Text style={styles.price}>${product.price}</Text>
+            </View>
+        </TouchableOpacity>
     );
 }
 

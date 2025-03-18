@@ -33,6 +33,61 @@ export default function BrowseScreen() {
         debouncedSearch(text);
     };
 
+    const renderContent = () => {
+        if (loading) {
+            return (
+                <View style={styles.centerContainer}>
+                    <ActivityIndicator size="large" color="#6741d9" />
+                </View>
+            );
+        }
+
+        if (error) {
+            return (
+                <View style={styles.centerContainer}>
+                    <Text style={styles.errorText}>{error}</Text>
+                    <TouchableOpacity
+                        style={styles.retryButton}
+                        onPress={() => search({ query: searchQuery })}
+                    >
+                        <Text style={styles.retryText}>Try Again</Text>
+                    </TouchableOpacity>
+                </View>
+            );
+        }
+
+        if (!searchQuery && products.length === 0) {
+            return (
+                <View style={styles.centerContainer}>
+                    <Text style={styles.placeholderText}>
+                        Search for products by name, brand, or category
+                    </Text>
+                </View>
+            );
+        }
+
+        if (searchQuery && products.length === 0) {
+            return (
+                <View style={styles.centerContainer}>
+                    <Text style={styles.noResults}>No products found</Text>
+                    <Text style={styles.noResultsSubtext}>
+                        Try different keywords or filters
+                    </Text>
+                </View>
+            );
+        }
+
+        return (
+            <FlatList
+                data={products}
+                numColumns={2}
+                renderItem={({ item }) => <ProductCard product={item} />}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={styles.grid}
+            />
+        );
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.searchBar}>
@@ -41,6 +96,8 @@ export default function BrowseScreen() {
                     onChangeText={onSearchChange}
                     placeholder="Search products..."
                     style={styles.input}
+                    returnKeyType="search"
+                    onSubmitEditing={() => search({ query: searchQuery })}
                 />
                 <TouchableOpacity
                     onPress={() => setShowFilters(true)}
@@ -50,32 +107,13 @@ export default function BrowseScreen() {
                 </TouchableOpacity>
             </View>
 
-            {loading ? (
-                <View style={styles.centerContainer}>
-                    <ActivityIndicator size="large" color="#6741d9" />
-                </View>
-            ) : error ? (
-                <View style={styles.centerContainer}>
-                    <Text style={styles.errorText}>{error}</Text>
-                </View>
-            ) : products.length > 0 ? (
-                <FlatList
-                    data={products}
-                    numColumns={2}
-                    renderItem={({ item }) => <ProductCard product={item} />}
-                    keyExtractor={(item) => item.id}
-                />
-            ) : searchQuery ? (
-                <View style={styles.centerContainer}>
-                    <Text style={styles.noResults}>No products found</Text>
-                </View>
-            ) : null}
+            {renderContent()}
 
             <FilterModal
                 visible={showFilters}
                 onClose={() => setShowFilters(false)}
                 onApply={(filters) => {
-                    search({ ...filters, query: searchQuery, page: 1 });
+                    search({ ...filters, query: searchQuery });
                     setShowFilters(false);
                 }}
             />
@@ -117,5 +155,29 @@ const styles = StyleSheet.create({
     noResults: {
         fontSize: 16,
         color: '#666',
+    },
+    grid: {
+        padding: 8,
+    },
+    retryButton: {
+        marginTop: 12,
+        padding: 8,
+        backgroundColor: '#6741d9',
+        borderRadius: 8,
+    },
+    retryText: {
+        color: 'white',
+        fontWeight: '600',
+    },
+    placeholderText: {
+        fontSize: 16,
+        color: '#666',
+        textAlign: 'center',
+        paddingHorizontal: 32,
+    },
+    noResultsSubtext: {
+        fontSize: 14,
+        color: '#999',
+        marginTop: 4,
     },
 });

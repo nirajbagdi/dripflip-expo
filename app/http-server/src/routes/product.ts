@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import dbClient from '@repo/db/client';
 import { productSchemas } from '../schemas';
+import { products } from '../data/products';
 
 const router = Router();
 
@@ -9,57 +9,65 @@ router.get('/search', async (req, res) => {
         const params = productSchemas.search.parse(req.query);
         const skip = (params.page - 1) * params.limit;
 
-        // Build where clause
-        const where: any = {};
+        let filteredProducts = [...products];
 
+        // Apply filters
         if (params.query) {
-            where.OR = [
-                { name: { contains: params.query, mode: 'insensitive' } },
-                { description: { contains: params.query, mode: 'insensitive' } },
-            ];
+            const query = params.query.toLowerCase();
+            filteredProducts = filteredProducts.filter(
+                (p) =>
+                    p.name.toLowerCase().includes(query) ||
+                    p.description.toLowerCase().includes(query)
+            );
         }
 
-        if (params.category) where.category = params.category;
-        if (params.brand) where.brand = params.brand;
-
-        if (params.minPrice || params.maxPrice) {
-            where.price = {};
-            if (params.minPrice) where.price.gte = params.minPrice;
-            if (params.maxPrice) where.price.lte = params.maxPrice;
+        if (params.category) {
+            filteredProducts = filteredProducts.filter(
+                (p) => p.category === params.category
+            );
         }
 
-        // Build sort object
-        const orderBy: any = {};
-        switch (params.sortBy) {
-            case 'price_asc':
-                orderBy.price = 'asc';
-                break;
-            case 'price_desc':
-                orderBy.price = 'desc';
-                break;
-            case 'newest':
-                orderBy.createdAt = 'desc';
-                break;
-            default:
-                orderBy.name = 'asc';
+        if (params.brand) {
+            filteredProducts = filteredProducts.filter(
+                (p) => p.brand === params.brand
+            );
         }
 
-        // Execute query with pagination
-        const [products, total] = await Promise.all([
-            dbClient.product.findMany({
-                where,
-                orderBy,
-                skip,
-                take: params.limit,
-            }),
-            dbClient.product.count({ where }),
-        ]);
+        if (params.minPrice) {
+            filteredProducts = filteredProducts.filter(
+                (p) => p.price >= params.minPrice!
+            );
+        }
+
+        if (params.maxPrice) {
+            filteredProducts = filteredProducts.filter(
+                (p) => p.price <= params.maxPrice!
+            );
+        }
+
+        // Apply sorting
+        if (params.sortBy) {
+            switch (params.sortBy) {
+                case 'price_asc':
+                    filteredProducts.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price_desc':
+                    filteredProducts.sort((a, b) => b.price - a.price);
+                    break;
+                case 'newest':
+                    // For dummy data, we'll just keep original order
+                    break;
+            }
+        }
+
+        // Apply pagination
+        const paginatedProducts = filteredProducts.slice(skip, skip + params.limit);
 
         res.json({
-            products,
+            products: paginatedProducts,
             page: params.page,
-            totalPages: Math.ceil(total / params.limit),
-            totalItems: total,
+            totalPages: Math.ceil(filteredProducts.length / params.limit),
+            totalItems: filteredProducts.length,
         });
     } catch (error) {
         res.status(400).json({ error: 'Invalid search parameters' });

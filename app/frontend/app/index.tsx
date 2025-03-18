@@ -1,15 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, ImageBackground, TouchableOpacity } from 'react-native';
 import { CardItem } from '../src/components';
 import styles from '../assets/styles';
-import DEMO from '../assets/data';
 import Icon from '../src/components/Icon';
-
 import CardStack from '../src/components/CardStack';
 import Card from '../src/components/Card';
+import { searchProducts } from '../src/api/products';
 
 const Index = () => {
     const [swiper, setSwiper] = useState<CardStack | null>(null);
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        const loadProducts = async () => {
+            try {
+                const response = await searchProducts({});
+                setProducts(response.products);
+            } catch (error) {
+                console.error('Failed to load products:', error);
+            }
+        };
+
+        loadProducts();
+    }, []);
 
     return (
         <ImageBackground
@@ -28,18 +41,17 @@ const Index = () => {
 
             <View style={styles.containerHome}>
                 <CardStack
-                    loop
                     verticalSwipe={false}
                     renderNoMoreCards={() => null}
                     ref={(newSwiper): void => setSwiper(newSwiper)}
                 >
-                    {DEMO.map((item) => (
+                    {products.map((item) => (
                         <Card key={`card-${item.id}`}>
                             <CardItem
                                 hasActions
-                                image={item.image}
+                                image={{ uri: item.image }} // Changed from require to uri
                                 name={item.name}
-                                description={item.description}
+                                description={item.description || ''}
                             />
                         </Card>
                     ))}
