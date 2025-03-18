@@ -195,3 +195,92 @@ describe('Product Management', () => {
         expect(newProductResponse.status).toBe(403);
     });
 });
+
+describe('Cart', () => {
+    let authToken: string;
+    let productId: string;
+
+    beforeAll(async () => {
+        const username = faker.internet.username();
+        const password = faker.internet.password();
+
+        await signup({ username, password, type: 'admin' });
+
+        const signinResponse = await signin({ username, password });
+        authToken = signinResponse.data.token;
+
+        const productResponse = await AXIOS.post({
+            url: '/api/products',
+            authToken: authToken,
+            data: {
+                name: 'Test Sneakers',
+                description: 'High-quality sneakers',
+                price: 99.99,
+                brand: 'Nike',
+                category: 'Shoes',
+                image: 'https://example.com/sneakers.jpg',
+                stock: 50,
+                sustainabilityBadge: ['Eco-Friendly'],
+            },
+        });
+        const { productId: newProductId } = productResponse.data;
+        productId = newProductId;
+    });
+
+    it('should add item to cart', async () => {
+        const response = await AXIOS.post({
+            url: '/api/cart/items',
+            authToken,
+            data: {
+                productId,
+                quantity: 1,
+            },
+        });
+
+        expect(response.status).toBe(201);
+    });
+
+    it('should get user cart', async () => {
+        const response = await AXIOS.get({
+            url: '/api/cart',
+            authToken,
+        });
+
+        expect(response.status).toBe(200);
+        expect(response.data.items).toBeDefined();
+    });
+
+    it('should update cart item quantity', async () => {
+        const cartResponse = await AXIOS.get({
+            url: '/api/cart',
+            authToken,
+        });
+        const itemId = cartResponse.data.items[0].id;
+
+        const response = await AXIOS.put({
+            url: `/api/cart/items/${itemId}`,
+            authToken,
+            data: {
+                quantity: 2,
+            },
+        });
+
+        expect(response.status).toBe(200);
+        expect(response.data.quantity).toBe(2);
+    });
+
+    it('should remove item from cart', async () => {
+        const cartResponse = await AXIOS.get({
+            url: '/api/cart',
+            authToken,
+        });
+        const itemId = cartResponse.data.items[0].id;
+
+        const response = await AXIOS.delete({
+            url: `/api/cart/items/${itemId}`,
+            authToken,
+        });
+
+        expect(response.status).toBe(204);
+    });
+});
