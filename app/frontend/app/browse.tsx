@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     StyleSheet,
     ActivityIndicator,
+    Text,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useProductSearch } from '../src/hooks/useProductSearch';
@@ -16,14 +17,15 @@ import { FilterModal } from '../src/components/FilterModal';
 export default function BrowseScreen() {
     const [searchQuery, setSearchQuery] = useState('');
     const [showFilters, setShowFilters] = useState(false);
-    const { products, loading, error, pagination, searchProducts, loadMore } =
-        useProductSearch();
+    const { products, loading, error, search } = useProductSearch();
 
     const debouncedSearch = useCallback(
         debounce((query: string) => {
-            searchProducts({ query });
+            if (query.trim()) {
+                search({ query });
+            }
         }, 300),
-        []
+        [search]
     );
 
     const onSearchChange = (text: string) => {
@@ -48,21 +50,32 @@ export default function BrowseScreen() {
                 </TouchableOpacity>
             </View>
 
-            <FlatList
-                data={products}
-                numColumns={2}
-                renderItem={({ item }) => <ProductCard product={item} />}
-                keyExtractor={(item) => item.id}
-                onEndReached={loadMore}
-                onEndReachedThreshold={0.5}
-                ListFooterComponent={() => loading && <ActivityIndicator />}
-            />
+            {loading ? (
+                <View style={styles.centerContainer}>
+                    <ActivityIndicator size="large" color="#6741d9" />
+                </View>
+            ) : error ? (
+                <View style={styles.centerContainer}>
+                    <Text style={styles.errorText}>{error}</Text>
+                </View>
+            ) : products.length > 0 ? (
+                <FlatList
+                    data={products}
+                    numColumns={2}
+                    renderItem={({ item }) => <ProductCard product={item} />}
+                    keyExtractor={(item) => item.id}
+                />
+            ) : searchQuery ? (
+                <View style={styles.centerContainer}>
+                    <Text style={styles.noResults}>No products found</Text>
+                </View>
+            ) : null}
 
             <FilterModal
                 visible={showFilters}
                 onClose={() => setShowFilters(false)}
                 onApply={(filters) => {
-                    searchProducts({ ...filters, query: searchQuery, page: 1 });
+                    search({ ...filters, query: searchQuery, page: 1 });
                     setShowFilters(false);
                 }}
             />
@@ -91,5 +104,18 @@ const styles = StyleSheet.create({
     },
     filterButton: {
         padding: 8,
+    },
+    centerContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 16,
+    },
+    noResults: {
+        fontSize: 16,
+        color: '#666',
     },
 });
