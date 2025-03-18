@@ -2,7 +2,7 @@ import React from 'react';
 import { useFonts } from 'expo-font';
 import { Text, View, Image, Dimensions, TouchableOpacity } from 'react-native';
 import Icon from './Icon';
-import { CardItemT } from '../types';
+import { CardItemT } from '../../app/types';
 import styles, {
     DISLIKE_ACTIONS,
     FLASH_ACTIONS,

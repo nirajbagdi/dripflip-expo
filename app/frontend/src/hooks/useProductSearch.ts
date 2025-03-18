@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 
 import { productAPI } from '../api/client';
-import { SearchParams } from '../types';
+import { SearchParams } from '../../app/types';
 
 export const useProductSearch = () => {
     const [products, setProducts] = useState([]);

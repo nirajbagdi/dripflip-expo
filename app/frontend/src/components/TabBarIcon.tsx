@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import Icon from './Icon';
 import styles, { DARK_GRAY, PRIMARY_COLOR } from '../../assets/styles';
-import { TabBarIconT } from '../types';
+import { TabBarIconT } from '../../app/types';
 
 const TabBarIcon = ({ focused, iconName, text }: TabBarIconT) => {
     const iconFocused = focused ? PRIMARY_COLOR : DARK_GRAY;

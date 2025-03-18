@@ -9,9 +9,9 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useProductSearch } from './hooks/useProductSearch';
-import { ProductCard } from './components/ProductCard';
-import { FilterModal } from './components/FilterModal';
+import { useProductSearch } from '../src/hooks/useProductSearch';
+import { ProductCard } from '../src/components/ProductCard';
+import { FilterModal } from '../src/components/FilterModal';
 
 export default function BrowseScreen() {
     const [searchQuery, setSearchQuery] = useState('');

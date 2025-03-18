@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { View, ImageBackground, TouchableOpacity } from 'react-native';
-import { CardItem } from './components';
+import { CardItem } from '../src/components';
 import styles from '../assets/styles';
 import DEMO from '../assets/data';
-import Icon from './components/Icon';
+import Icon from '../src/components/Icon';
 
-import CardStack from './components/CardStack';
-import Card from './components/Card';
+import CardStack from '../src/components/CardStack';
+import Card from '../src/components/Card';
 
 const Index = () => {
     const [swiper, setSwiper] = useState<CardStack | null>(null);
