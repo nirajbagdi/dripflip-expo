@@ -48,6 +48,22 @@ export const cartSchemas = {
     }),
 };
 
+export const orderSchemas = {
+    create: z.object({
+        cartId: z.string(),
+    }),
+
+    updateStatus: z.object({
+        status: z.enum([
+            'PENDING',
+            'PROCESSING',
+            'SHIPPED',
+            'DELIVERED',
+            'CANCELLED',
+        ]),
+    }),
+};
+
 declare global {
     namespace Express {
         export interface Request {

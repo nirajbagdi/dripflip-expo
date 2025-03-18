@@ -284,3 +284,92 @@ describe('Cart', () => {
         expect(response.status).toBe(204);
     });
 });
+
+describe('Order Management', () => {
+    let authToken: string;
+    let cartId: string;
+    let productId: string;
+
+    beforeAll(async () => {
+        const username = faker.internet.username();
+        const password = faker.internet.password();
+
+        await signup({ username, password, type: 'admin' });
+        const signinResponse = await signin({ username, password });
+        authToken = signinResponse.data.token;
+
+        const productResponse = await AXIOS.post({
+            url: '/api/products',
+            authToken: authToken,
+            data: {
+                name: 'Test Sneakers',
+                description: 'High-quality sneakers',
+                price: 99.99,
+                brand: 'Nike',
+                category: 'Shoes',
+                image: 'https://example.com/sneakers.jpg',
+                stock: 50,
+                sustainabilityBadge: ['Eco-Friendly'],
+            },
+        });
+        const { productId: newProductId } = productResponse.data;
+        productId = newProductId;
+
+        // Create a cart with items
+        await AXIOS.post({
+            url: '/api/cart/items',
+            authToken,
+            data: {
+                productId,
+                quantity: 2,
+            },
+        });
+
+        const getCartResponse = await AXIOS.get({
+            url: '/api/cart',
+            authToken,
+        });
+
+        cartId = getCartResponse.data.id;
+    });
+
+    it('should create an order from cart', async () => {
+        const response = await AXIOS.post({
+            url: '/api/orders',
+            authToken,
+            data: { cartId },
+        });
+
+        expect(response.status).toBe(201);
+        expect(response.data.total).toBeDefined();
+        expect(response.data.status).toBe('PENDING');
+    });
+
+    it('should get user orders', async () => {
+        const response = await AXIOS.get({
+            url: '/api/orders',
+            authToken,
+        });
+
+        expect(response.status).toBe(200);
+        expect(Array.isArray(response.data)).toBe(true);
+    });
+
+    it('should update order status (Admin only)', async () => {
+        const ordersResponse = await AXIOS.get({
+            url: '/api/orders',
+            authToken,
+        });
+
+        const orderId = ordersResponse.data[0].id;
+
+        const response = await AXIOS.patch({
+            url: `/api/orders/${orderId}/status`,
+            authToken,
+            data: { status: 'PROCESSING' },
+        });
+
+        expect(response.status).toBe(200);
+        expect(response.data.status).toBe('PROCESSING');
+    });
+});

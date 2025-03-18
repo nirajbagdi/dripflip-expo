@@ -95,6 +95,29 @@ export const AXIOS = {
             return error.response;
         }
     },
+
+    async patch({
+        url,
+        data,
+        authToken = null,
+    }: {
+        url: string;
+        data?: any;
+        authToken?: string | null;
+    }): Promise<AxiosResponse> {
+        try {
+            const response = await axios.patch(`${API_BASE}${url}`, data, {
+                ...(authToken && {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`,
+                    },
+                }),
+            });
+            return response;
+        } catch (error: any) {
+            return error.response;
+        }
+    },
 };
 
 export async function signup({
