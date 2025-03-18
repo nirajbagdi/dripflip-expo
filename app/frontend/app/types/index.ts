@@ -47,3 +47,14 @@ export type DataT = {
     details: string;
     image: string;
 };
+
+export type SearchParams = {
+    query?: string;
+    category?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    brand?: string;
+    sortBy?: 'price_asc' | 'price_desc' | 'newest';
+    page?: number;
+    limit?: number;
+};
