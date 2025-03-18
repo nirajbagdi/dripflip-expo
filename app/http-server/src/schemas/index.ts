@@ -35,6 +35,17 @@ export const productSchemas = {
         stock: z.number().int().optional(),
         sustainabilityBadge: z.array(z.string()).optional(),
     }),
+
+    search: z.object({
+        query: z.string().optional(),
+        category: z.string().optional(),
+        minPrice: z.number().optional(),
+        maxPrice: z.number().optional(),
+        brand: z.string().optional(),
+        sortBy: z.enum(['price_asc', 'price_desc', 'newest']).optional(),
+        page: z.number().int().min(1).default(1),
+        limit: z.number().int().min(1).max(50).default(20),
+    }),
 };
 
 export const cartSchemas = {
