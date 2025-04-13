@@ -5,7 +5,7 @@ type AxiosResponse = {
     data: any;
 };
 
-export const API_BASE = 'http://localhost:3000';
+export const API_BASE = 'http://192.168.0.182:3000';
 
 export const AXIOS = {
     async get({

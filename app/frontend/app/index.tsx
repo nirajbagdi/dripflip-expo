@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
     View,
     ImageBackground,
     TouchableOpacity,
     ActivityIndicator,
     Text,
+    StyleSheet,
 } from 'react-native';
 import { CardItem } from '../src/components';
 import styles from '../assets/styles';
@@ -17,10 +18,17 @@ const Index = () => {
     const [swiper, setSwiper] = useState<CardStack | null>(null);
     const { products, loading, error, refreshProducts, handleSwipe } =
         useProductQueue();
+    const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(
+        null
+    );
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const onSwipedLeft = (index: number) => {
         const product = products[index];
         if (product) {
+            setSwipeDirection('left');
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            timeoutRef.current = setTimeout(() => setSwipeDirection(null), 1500);
             handleSwipe(product.id, 'IGNORE');
         }
     };
@@ -28,6 +36,9 @@ const Index = () => {
     const onSwipedRight = (index: number) => {
         const product = products[index];
         if (product) {
+            setSwipeDirection('right');
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            timeoutRef.current = setTimeout(() => setSwipeDirection(null), 1500);
             handleSwipe(product.id, 'LIKE');
         }
     };
@@ -102,6 +113,24 @@ const Index = () => {
             </TouchableOpacity>
 
             <View style={styles.containerHome}>
+                {swipeDirection === 'left' && (
+                    <View
+                        style={[localStyles.swipeIndicator, localStyles.swipeLeft]}
+                    >
+                        <Icon name="close" size={30} color="white" />
+                        <Text style={localStyles.swipeText}>Ignored</Text>
+                    </View>
+                )}
+
+                {swipeDirection === 'right' && (
+                    <View
+                        style={[localStyles.swipeIndicator, localStyles.swipeRight]}
+                    >
+                        <Icon name="heart" size={30} color="white" />
+                        <Text style={localStyles.swipeText}>Liked!</Text>
+                    </View>
+                )}
+
                 <CardStack
                     verticalSwipe={false}
                     renderNoMoreCards={() => (
@@ -153,5 +182,43 @@ const Index = () => {
         </ImageBackground>
     );
 };
+
+const localStyles = StyleSheet.create({
+    swipeIndicator: {
+        position: 'absolute',
+        top: 50,
+        zIndex: 1000,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 30,
+    },
+    swipeLeft: {
+        backgroundColor: '#AB274F',
+        left: 20,
+    },
+    swipeRight: {
+        backgroundColor: '#B644B2',
+        right: 20,
+    },
+    swipeText: {
+        color: 'white',
+        fontWeight: 'bold',
+        marginLeft: 8,
+        fontSize: 16,
+    },
+    helpText: {
+        position: 'absolute',
+        bottom: -80,
+        left: 0,
+        right: 0,
+        alignItems: 'center',
+    },
+    helpTextContent: {
+        color: '#666',
+        fontSize: 14,
+    },
+});
 
 export default Index;

@@ -1,5 +1,12 @@
 import { useFonts } from 'expo-font';
-import { Text, View, Image, Dimensions, TouchableOpacity } from 'react-native';
+import {
+    Text,
+    View,
+    Image,
+    Dimensions,
+    TouchableOpacity,
+    StyleSheet,
+} from 'react-native';
 import Icon from './Icon';
 import type { CardItemT } from '../../app/types';
 import styles, { DISLIKE_ACTIONS, LIKE_ACTIONS } from '../../assets/styles';
@@ -50,7 +57,7 @@ const CardItem = ({
     return (
         <View style={styles.containerCardItem}>
             {/* IMAGE */}
-            <Image source={image} style={imageStyle} />
+            <Image source={image} style={imageStyle} resizeMode="cover" />
 
             {/* BRAND */}
             {brand && <Text style={styles.brandText}>{brand}</Text>}
@@ -59,29 +66,28 @@ const CardItem = ({
             <Text style={[nameStyle, styles.greatvibes]}>{name}</Text>
 
             {/* PRICE */}
-            {price && <Text style={styles.priceText}>{formatPrice(price)}</Text>}
+            {price && <Text style={styles.priceText}>${formatPrice(price)}</Text>}
 
             {/* SUSTAINABILITY BADGE */}
             {sustainabilityBadge && sustainabilityBadge.length > 0 && (
-                <View style={styles.badgeContainer}>
-                    <Icon name="leaf" color="#4CAF50" size={16} />
-                    <Text style={styles.badgeText}>Sustainable</Text>
+                <View style={localStyles.badgesContainer}>
+                    {sustainabilityBadge.map((badge, index) => (
+                        <View key={index} style={localStyles.badgeContainer}>
+                            <Icon name="leaf" color="#4CAF50" size={14} />
+                            <Text style={localStyles.badgeText}>{badge}</Text>
+                        </View>
+                    ))}
                 </View>
             )}
 
             {/* DESCRIPTION */}
             {description && (
-                <Text style={[styles.descriptionCardItem, styles.quicksand]}>
-                    {description}
-                </Text>
-            )}
-
-            {/* STATUS */}
-            {!description && (
-                <View style={styles.status}>
-                    <View style={isOnline ? styles.online : styles.offline} />
-                    <Text style={styles.statusText}>
-                        {isOnline ? 'Online' : 'Offline'}
+                <View style={localStyles.descriptionContainer}>
+                    <Text
+                        style={[styles.descriptionCardItem, styles.quicksand]}
+                        numberOfLines={4}
+                    >
+                        {description}
                     </Text>
                 </View>
             )}
@@ -101,5 +107,34 @@ const CardItem = ({
         </View>
     );
 };
+
+const localStyles = StyleSheet.create({
+    badgesContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        marginHorizontal: 20,
+        marginBottom: 10,
+    },
+    badgeContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#E8F5E9',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 12,
+        marginRight: 6,
+        marginBottom: 6,
+    },
+    badgeText: {
+        color: '#4CAF50',
+        fontSize: 12,
+        marginLeft: 4,
+    },
+    descriptionContainer: {
+        paddingHorizontal: 20,
+        marginBottom: 15,
+    },
+});
 
 export default CardItem;

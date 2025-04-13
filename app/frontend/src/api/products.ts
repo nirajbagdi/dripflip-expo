@@ -1,6 +1,9 @@
 import axios from 'axios';
+import Constants from 'expo-constants';
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL =
+    Constants.expoConfig?.extra?.EXPO_PUBLIC_API_URL ||
+    'http://192.168.0.182:3000/api';
 
 export type SearchParams = {
     query?: string;

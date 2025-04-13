@@ -2,7 +2,8 @@ import axios from 'axios';
 
 import type { SearchParams } from '../../app/types';
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+// Replace localhost with your computer's IP address
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.0.182:3000/api';
 
 export const apiClient = axios.create({
     baseURL: API_URL,
