@@ -6,6 +6,9 @@ export type CardItemT = {
     isOnline?: boolean;
     matches?: string;
     name: string;
+    price?: string | number;
+    brand?: string;
+    sustainabilityBadge?: string[];
 };
 
 export type IconT = {

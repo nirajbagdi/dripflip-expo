@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { SearchParams } from '../../app/types';
+import type { SearchParams } from '../../app/types';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
 

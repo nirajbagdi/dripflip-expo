@@ -1,15 +1,9 @@
-import React from 'react';
 import { useFonts } from 'expo-font';
 import { Text, View, Image, Dimensions, TouchableOpacity } from 'react-native';
 import Icon from './Icon';
-import { CardItemT } from '../../app/types';
-import styles, {
-    DISLIKE_ACTIONS,
-    FLASH_ACTIONS,
-    LIKE_ACTIONS,
-    STAR_ACTIONS,
-    WHITE,
-} from '../../assets/styles';
+import type { CardItemT } from '../../app/types';
+import styles, { DISLIKE_ACTIONS, LIKE_ACTIONS } from '../../assets/styles';
+import { formatPrice } from '../utils';
 
 import { Raleway_200ExtraLight } from '@expo-google-fonts/raleway';
 import { Quicksand_300Light } from '@expo-google-fonts/quicksand';
@@ -22,6 +16,9 @@ const CardItem = ({
     image,
     isOnline,
     name,
+    price,
+    brand,
+    sustainabilityBadge = [],
 }: CardItemT) => {
     // Custom styling
     const fullWidth = Dimensions.get('window').width;
@@ -54,14 +51,31 @@ const CardItem = ({
         <View style={styles.containerCardItem}>
             {/* IMAGE */}
             <Image source={image} style={imageStyle} />
+
+            {/* BRAND */}
+            {brand && <Text style={styles.brandText}>{brand}</Text>}
+
             {/* NAME */}
             <Text style={[nameStyle, styles.greatvibes]}>{name}</Text>
+
+            {/* PRICE */}
+            {price && <Text style={styles.priceText}>{formatPrice(price)}</Text>}
+
+            {/* SUSTAINABILITY BADGE */}
+            {sustainabilityBadge && sustainabilityBadge.length > 0 && (
+                <View style={styles.badgeContainer}>
+                    <Icon name="leaf" color="#4CAF50" size={16} />
+                    <Text style={styles.badgeText}>Sustainable</Text>
+                </View>
+            )}
+
             {/* DESCRIPTION */}
             {description && (
                 <Text style={[styles.descriptionCardItem, styles.quicksand]}>
                     {description}
                 </Text>
             )}
+
             {/* STATUS */}
             {!description && (
                 <View style={styles.status}>
@@ -71,6 +85,7 @@ const CardItem = ({
                     </Text>
                 </View>
             )}
+
             {/* ACTIONS */}
             {hasActions && (
                 <View style={styles.actionsCardItem}>

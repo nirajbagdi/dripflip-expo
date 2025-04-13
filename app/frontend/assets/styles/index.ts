@@ -319,4 +319,32 @@ export default StyleSheet.create({
     iconMenu: {
         alignItems: 'center',
     },
+    brandText: {
+        fontSize: 16,
+        color: GRAY,
+        textAlign: 'center',
+        marginTop: 10,
+    },
+    priceText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: PRIMARY_COLOR,
+        textAlign: 'center',
+        marginVertical: 5,
+    },
+    badgeContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#E8F5E9',
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 20,
+        marginVertical: 5,
+    },
+    badgeText: {
+        color: '#4CAF50',
+        fontSize: 12,
+        marginLeft: 5,
+    },
 });
