@@ -32,10 +32,10 @@ export function useProductQueue() {
 
                 // For now, just log the action
                 if (action === 'LIKE') {
-                    Alert.alert(
-                        'Added to favorites!',
-                        'You can find this item in your liked products.'
-                    );
+                    // Alert.alert(
+                    //     'Added to favorites!',
+                    //     'You can find this item in your liked products.'
+                    // );
                 }
             } catch (err) {
                 console.error('Error recording swipe:', err);

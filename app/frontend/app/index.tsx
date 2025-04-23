@@ -102,7 +102,7 @@ const Index = () => {
             source={require('../assets/images/bg.png')}
             style={styles.bg}
         >
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 style={{
                     position: 'absolute',
                     top: 60,
@@ -110,7 +110,7 @@ const Index = () => {
                 }}
             >
                 <Icon name="cart" size={30} color="#6741d9" />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <View style={styles.containerHome}>
                 {swipeDirection === 'left' && (

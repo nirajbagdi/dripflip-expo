@@ -24,12 +24,12 @@ export default StyleSheet.create({
         fontFamily: 'Raleway_200ExtraLight',
     },
     quicksand: {
-        fontSize: 20,
+        fontSize: 16,
         fontFamily: 'Quicksand_300Light',
     },
     greatvibes: {
         color: '#cc5de8',
-        fontSize: 50,
+        fontSize: 40,
         fontFamily: 'GreatVibes_400Regular',
         paddingHorizontal: 10,
         textAlign: 'center',
@@ -40,12 +40,13 @@ export default StyleSheet.create({
         backgroundColor: WHITE,
         borderRadius: 8,
         alignItems: 'center',
-        margin: 10,
+        marginTop: 30,
         elevation: 1,
         shadowOpacity: 0.05,
         shadowRadius: 10,
         shadowColor: BLACK,
         shadowOffset: { height: 0, width: 0 },
+        padding: 0,
     },
     matchesCardItem: {
         marginTop: -35,
@@ -253,7 +254,7 @@ export default StyleSheet.create({
     // CONTAINER - HOME
     containerHome: {
         marginHorizontal: 10,
-        marginVertical: 130,
+        // marginVertical: 130,
     },
 
     // CONTAINER - MATCHES
@@ -326,11 +327,11 @@ export default StyleSheet.create({
         marginTop: 10,
     },
     priceText: {
-        fontSize: 24,
+        fontSize: 18,
         fontWeight: 'bold',
         color: PRIMARY_COLOR,
         textAlign: 'center',
-        marginVertical: 5,
+        marginVertical: 10,
     },
     badgeContainer: {
         flexDirection: 'row',

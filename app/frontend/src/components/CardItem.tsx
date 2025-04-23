@@ -60,10 +60,10 @@ const CardItem = ({
             <Image source={image} style={imageStyle} resizeMode="cover" />
 
             {/* BRAND */}
-            {brand && <Text style={styles.brandText}>{brand}</Text>}
+            {/* {brand && <Text style={styles.brandText}>{brand}</Text>} */}
 
             {/* NAME */}
-            <Text style={[nameStyle, styles.greatvibes]}>{name}</Text>
+            <Text style={styles.greatvibes}>{name}</Text>
 
             {/* PRICE */}
             {price && <Text style={styles.priceText}>${formatPrice(price)}</Text>}
@@ -132,8 +132,8 @@ const localStyles = StyleSheet.create({
         marginLeft: 4,
     },
     descriptionContainer: {
-        paddingHorizontal: 20,
-        marginBottom: 15,
+        // paddingHorizontal: 20,
+        // marginBottom: 15,
     },
 });
 
