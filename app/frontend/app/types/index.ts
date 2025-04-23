@@ -1,4 +1,5 @@
 export type CardItemT = {
+    id?: string;
     description?: string;
     hasActions?: boolean;
     hasVariant?: boolean;

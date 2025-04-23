@@ -1,3 +1,5 @@
+'use client';
+
 import { useFonts } from 'expo-font';
 import {
     Text,
@@ -7,6 +9,7 @@ import {
     TouchableOpacity,
     StyleSheet,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import Icon from './Icon';
 import type { CardItemT } from '../../app/types';
 import styles, { DISLIKE_ACTIONS, LIKE_ACTIONS } from '../../assets/styles';
@@ -17,6 +20,7 @@ import { Quicksand_300Light } from '@expo-google-fonts/quicksand';
 import { GreatVibes_400Regular } from '@expo-google-fonts/great-vibes';
 
 const CardItem = ({
+    id,
     description,
     hasActions,
     hasVariant,
@@ -29,6 +33,7 @@ const CardItem = ({
 }: CardItemT) => {
     // Custom styling
     const fullWidth = Dimensions.get('window').width;
+    const router = useRouter();
 
     const [fontsLoaded] = useFonts({
         Raleway_200ExtraLight,
@@ -54,16 +59,26 @@ const CardItem = ({
         },
     ];
 
+    const handlePress = () => {
+        if (id) {
+            router.push(`/product/${id}`);
+        }
+    };
+
     return (
         <View style={styles.containerCardItem}>
             {/* IMAGE */}
-            <Image source={image} style={imageStyle} resizeMode="cover" />
+            <TouchableOpacity activeOpacity={0.9} onPress={handlePress}>
+                <Image source={image} style={imageStyle} resizeMode="cover" />
+            </TouchableOpacity>
 
             {/* BRAND */}
-            {/* {brand && <Text style={styles.brandText}>{brand}</Text>} */}
+            {brand && <Text style={styles.brandText}>{brand}</Text>}
 
             {/* NAME */}
-            <Text style={styles.greatvibes}>{name}</Text>
+            <TouchableOpacity activeOpacity={0.9} onPress={handlePress}>
+                <Text style={[nameStyle, styles.greatvibes]}>{name}</Text>
+            </TouchableOpacity>
 
             {/* PRICE */}
             {price && <Text style={styles.priceText}>${formatPrice(price)}</Text>}
@@ -132,8 +147,8 @@ const localStyles = StyleSheet.create({
         marginLeft: 4,
     },
     descriptionContainer: {
-        // paddingHorizontal: 20,
-        // marginBottom: 15,
+        paddingHorizontal: 20,
+        marginBottom: 15,
     },
 });
 

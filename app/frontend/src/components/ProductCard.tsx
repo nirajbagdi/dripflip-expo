@@ -1,5 +1,8 @@
+'use client';
+
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 type ProductCardProps = {
     product: {
@@ -13,8 +16,17 @@ type ProductCardProps = {
 };
 
 export function ProductCard({ product }: ProductCardProps) {
+    const router = useRouter();
+
+    const handlePress = () => {
+        router.push({
+            pathname: '/product/[id]',
+            params: { id: product.id },
+        });
+    };
+
     return (
-        <TouchableOpacity style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={handlePress}>
             <Image source={{ uri: product.image }} style={styles.image} />
             {product.sustainabilityBadge.length > 0 && (
                 <View style={styles.badge}>

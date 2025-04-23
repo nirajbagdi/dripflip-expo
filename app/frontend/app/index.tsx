@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useRef } from 'react';
 import {
     View,
@@ -22,6 +24,18 @@ const Index = () => {
         null
     );
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+
+    const onSwipeStart = () => {
+        setIsTransitioning(true);
+    };
+
+    const onSwipeEnd = () => {
+        // Keep transitioning true for a short period after swipe ends
+        setTimeout(() => {
+            setIsTransitioning(false);
+        }, 300);
+    };
 
     const onSwipedLeft = (index: number) => {
         const product = products[index];
@@ -102,7 +116,7 @@ const Index = () => {
             source={require('../assets/images/bg.png')}
             style={styles.bg}
         >
-            {/* <TouchableOpacity
+            <TouchableOpacity
                 style={{
                     position: 'absolute',
                     top: 60,
@@ -110,7 +124,7 @@ const Index = () => {
                 }}
             >
                 <Icon name="cart" size={30} color="#6741d9" />
-            </TouchableOpacity> */}
+            </TouchableOpacity>
 
             <View style={styles.containerHome}>
                 {swipeDirection === 'left' && (
@@ -163,10 +177,16 @@ const Index = () => {
                     ref={(newSwiper): void => setSwiper(newSwiper)}
                     onSwipedLeft={onSwipedLeft}
                     onSwipedRight={onSwipedRight}
+                    onSwipeStart={onSwipeStart}
+                    onSwipeEnd={onSwipeEnd}
+                    cardContainerStyle={isTransitioning ? { opacity: 1 } : undefined}
+                    secondCardZoom={0.97} // Slightly larger to reduce the visual jump
+                    duration={300} // Slightly longer animation for smoother transition
                 >
                     {products.map((item, index) => (
                         <Card key={`card-${item.id}`}>
                             <CardItem
+                                id={item.id}
                                 hasActions
                                 image={{ uri: item.image }}
                                 name={item.name}
@@ -178,6 +198,12 @@ const Index = () => {
                         </Card>
                     ))}
                 </CardStack>
+
+                <View style={localStyles.helpText}>
+                    <Text style={localStyles.helpTextContent}>
+                        Swipe right to like, left to ignore
+                    </Text>
+                </View>
             </View>
         </ImageBackground>
     );
