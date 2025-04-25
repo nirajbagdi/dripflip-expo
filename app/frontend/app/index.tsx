@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import SwipeableDeck from '../src/components/SwipeableDeck';
 import { useProductQueue } from '../src/hooks/useProductQueue';
+import { useCart } from '@/src/context/CartContext';
 
 export default function Index() {
     const router = useRouter();
@@ -25,9 +26,13 @@ export default function Index() {
         handleSwipe(item.id, 'IGNORE');
     };
 
+    const cartCtx = useCart();
+
     const onSwipeRight = (item: any) => {
         handleSwipe(item.id, 'LIKE');
         setLikedCount((prev) => prev + 1);
+
+        cartCtx.addItem(item);
     };
 
     const onCardPress = (item: any) => {
