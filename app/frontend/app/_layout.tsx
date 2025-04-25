@@ -6,15 +6,27 @@ export default function AppLayout() {
         <Tabs
             screenOptions={{
                 tabBarActiveTintColor: '#6741d9',
+                tabBarInactiveTintColor: '#888',
                 headerShown: false,
+                tabBarStyle: {
+                    elevation: 0,
+                    borderTopWidth: 1,
+                    borderTopColor: '#f0f0f0',
+                    height: 60,
+                    paddingBottom: 10,
+                },
+                tabBarLabelStyle: {
+                    fontSize: 12,
+                    fontWeight: '500',
+                },
             }}
         >
             <Tabs.Screen
                 name="index"
                 options={{
                     title: 'Discover',
-                    tabBarIcon: ({ color }) => (
-                        <Ionicons name="card" size={24} color={color} />
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="compass" size={size} color={color} />
                     ),
                 }}
             />
@@ -22,8 +34,26 @@ export default function AppLayout() {
                 name="browse"
                 options={{
                     title: 'Browse',
-                    tabBarIcon: ({ color }) => (
-                        <Ionicons name="search" size={24} color={color} />
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="search" size={size} color={color} />
+                    ),
+                }}
+            />
+            <Tabs.Screen
+                name="liked"
+                options={{
+                    title: 'Liked',
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="heart" size={size} color={color} />
+                    ),
+                }}
+            />
+            <Tabs.Screen
+                name="profile"
+                options={{
+                    title: 'Profile',
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="person" size={size} color={color} />
                     ),
                 }}
             />

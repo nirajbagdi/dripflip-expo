@@ -1,250 +1,270 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import {
     View,
-    ImageBackground,
-    TouchableOpacity,
+    StyleSheet,
     ActivityIndicator,
     Text,
-    StyleSheet,
+    TouchableOpacity,
+    StatusBar,
+    SafeAreaView,
 } from 'react-native';
-import { CardItem } from '../src/components';
-import styles from '../assets/styles';
-import Icon from '../src/components/Icon';
-import CardStack from '../src/components/CardStack';
-import Card from '../src/components/Card';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import SwipeableDeck from '../src/components/SwipeableDeck';
 import { useProductQueue } from '../src/hooks/useProductQueue';
 
-const Index = () => {
-    const [swiper, setSwiper] = useState<CardStack | null>(null);
+export default function Index() {
+    const router = useRouter();
     const { products, loading, error, refreshProducts, handleSwipe } =
         useProductQueue();
-    const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(
-        null
+    const [likedCount, setLikedCount] = useState(0);
+
+    const onSwipeLeft = (item: any) => {
+        handleSwipe(item.id, 'IGNORE');
+    };
+
+    const onSwipeRight = (item: any) => {
+        handleSwipe(item.id, 'LIKE');
+        setLikedCount((prev) => prev + 1);
+    };
+
+    const onCardPress = (item: any) => {
+        router.push(`/product/${item.id}`);
+    };
+
+    const renderNoMoreCards = () => (
+        <View style={styles.noMoreCardsContainer}>
+            <Ionicons
+                name="checkmark-circle"
+                size={60}
+                color="#4CD964"
+                style={styles.noMoreCardsIcon}
+            />
+            <Text style={styles.noMoreCardsTitle}>You're all caught up!</Text>
+            <Text style={styles.noMoreCardsText}>
+                You've seen all available products. Check back later for new
+                arrivals.
+            </Text>
+            <TouchableOpacity style={styles.refreshButton} onPress={refreshProducts}>
+                <Text style={styles.refreshButtonText}>Refresh</Text>
+            </TouchableOpacity>
+        </View>
     );
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const [isTransitioning, setIsTransitioning] = useState(false);
-
-    const onSwipeStart = () => {
-        setIsTransitioning(true);
-    };
-
-    const onSwipeEnd = () => {
-        // Keep transitioning true for a short period after swipe ends
-        setTimeout(() => {
-            setIsTransitioning(false);
-        }, 300);
-    };
-
-    const onSwipedLeft = (index: number) => {
-        const product = products[index];
-        if (product) {
-            setSwipeDirection('left');
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
-            timeoutRef.current = setTimeout(() => setSwipeDirection(null), 1500);
-            handleSwipe(product.id, 'IGNORE');
-        }
-    };
-
-    const onSwipedRight = (index: number) => {
-        const product = products[index];
-        if (product) {
-            setSwipeDirection('right');
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
-            timeoutRef.current = setTimeout(() => setSwipeDirection(null), 1500);
-            handleSwipe(product.id, 'LIKE');
-        }
-    };
 
     if (loading) {
         return (
-            <ImageBackground
-                source={require('../assets/images/bg.png')}
-                style={styles.bg}
-            >
-                <View
-                    style={[
-                        styles.containerHome,
-                        { justifyContent: 'center', alignItems: 'center' },
-                    ]}
-                >
-                    <ActivityIndicator size="large" color="#6741d9" />
-                    <Text style={{ marginTop: 20, color: '#333', fontSize: 16 }}>
-                        Loading products...
-                    </Text>
-                </View>
-            </ImageBackground>
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#6741d9" />
+                <Text style={styles.loadingText}>
+                    Discovering fresh styles for you...
+                </Text>
+            </View>
         );
     }
 
     if (error) {
         return (
-            <ImageBackground
-                source={require('../assets/images/bg.png')}
-                style={styles.bg}
-            >
-                <View
-                    style={[
-                        styles.containerHome,
-                        { justifyContent: 'center', alignItems: 'center' },
-                    ]}
+            <View style={styles.errorContainer}>
+                <Ionicons name="alert-circle" size={60} color="#FF3B30" />
+                <Text style={styles.errorTitle}>Oops!</Text>
+                <Text style={styles.errorText}>{error}</Text>
+                <TouchableOpacity
+                    style={styles.retryButton}
+                    onPress={refreshProducts}
                 >
-                    <Text style={{ color: 'red', fontSize: 16, marginBottom: 20 }}>
-                        {error}
-                    </Text>
-                    <TouchableOpacity
-                        style={{
-                            backgroundColor: '#6741d9',
-                            paddingHorizontal: 20,
-                            paddingVertical: 10,
-                            borderRadius: 8,
-                        }}
-                        onPress={refreshProducts}
-                    >
-                        <Text style={{ color: 'white', fontWeight: 'bold' }}>
-                            Try Again
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </ImageBackground>
+                    <Text style={styles.retryButtonText}>Try Again</Text>
+                </TouchableOpacity>
+            </View>
         );
     }
 
     return (
-        <ImageBackground
-            source={require('../assets/images/bg.png')}
-            style={styles.bg}
-        >
-            <TouchableOpacity
-                style={{
-                    position: 'absolute',
-                    top: 60,
-                    right: 30,
-                }}
-            >
-                <Icon name="cart" size={30} color="#6741d9" />
-            </TouchableOpacity>
+        <SafeAreaView style={styles.container}>
+            <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
-            <View style={styles.containerHome}>
-                {swipeDirection === 'left' && (
-                    <View
-                        style={[localStyles.swipeIndicator, localStyles.swipeLeft]}
-                    >
-                        <Icon name="close" size={30} color="white" />
-                        <Text style={localStyles.swipeText}>Ignored</Text>
-                    </View>
-                )}
+            {/* Header */}
+            <View style={styles.header}>
+                <View style={styles.logoContainer}>
+                    <Text style={styles.logoText}>DripFlip</Text>
+                </View>
 
-                {swipeDirection === 'right' && (
-                    <View
-                        style={[localStyles.swipeIndicator, localStyles.swipeRight]}
-                    >
-                        <Icon name="heart" size={30} color="white" />
-                        <Text style={localStyles.swipeText}>Liked!</Text>
-                    </View>
-                )}
-
-                <CardStack
-                    verticalSwipe={false}
-                    renderNoMoreCards={() => (
-                        <View
-                            style={{
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                height: 300,
-                            }}
-                        >
-                            <Text style={{ fontSize: 18, color: '#333' }}>
-                                No more products
-                            </Text>
-                            <TouchableOpacity
-                                style={{
-                                    marginTop: 20,
-                                    backgroundColor: '#6741d9',
-                                    paddingHorizontal: 20,
-                                    paddingVertical: 10,
-                                    borderRadius: 8,
-                                }}
-                                onPress={refreshProducts}
-                            >
-                                <Text style={{ color: 'white', fontWeight: 'bold' }}>
-                                    Refresh
-                                </Text>
-                            </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.cartButton}
+                    onPress={() => router.push('/cart')}
+                >
+                    <Ionicons name="cart-outline" size={24} color="#333" />
+                    {likedCount > 0 && (
+                        <View style={styles.badge}>
+                            <Text style={styles.badgeText}>{likedCount}</Text>
                         </View>
                     )}
-                    ref={(newSwiper): void => setSwiper(newSwiper)}
-                    onSwipedLeft={onSwipedLeft}
-                    onSwipedRight={onSwipedRight}
-                    onSwipeStart={onSwipeStart}
-                    onSwipeEnd={onSwipeEnd}
-                    cardContainerStyle={isTransitioning ? { opacity: 1 } : undefined}
-                    secondCardZoom={0.97} // Slightly larger to reduce the visual jump
-                    duration={300} // Slightly longer animation for smoother transition
-                >
-                    {products.map((item, index) => (
-                        <Card key={`card-${item.id}`}>
-                            <CardItem
-                                id={item.id}
-                                hasActions
-                                image={{ uri: item.image }}
-                                name={item.name}
-                                description={item.description || ''}
-                                price={item.price}
-                                brand={item.brand}
-                                sustainabilityBadge={item.sustainabilityBadge}
-                            />
-                        </Card>
-                    ))}
-                </CardStack>
-
-                <View style={localStyles.helpText}>
-                    <Text style={localStyles.helpTextContent}>
-                        Swipe right to like, left to ignore
-                    </Text>
-                </View>
+                </TouchableOpacity>
             </View>
-        </ImageBackground>
-    );
-};
 
-const localStyles = StyleSheet.create({
-    swipeIndicator: {
-        position: 'absolute',
-        top: 50,
-        zIndex: 1000,
+            {/* Main Content */}
+            <View style={styles.content}>
+                <SwipeableDeck
+                    data={products}
+                    onSwipeLeft={onSwipeLeft}
+                    onSwipeRight={onSwipeRight}
+                    onCardPress={onCardPress}
+                    renderNoMoreCards={renderNoMoreCards}
+                />
+            </View>
+
+            {/* Help Text */}
+            <View style={styles.helpTextContainer}>
+                <Text style={styles.helpText}>
+                    Swipe right to like, left to skip
+                </Text>
+            </View>
+        </SafeAreaView>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#f8f9fa',
+    },
+    header: {
         flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 30,
+        paddingVertical: 15,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#f0f0f0',
     },
-    swipeLeft: {
-        backgroundColor: '#AB274F',
-        left: 20,
-    },
-    swipeRight: {
-        backgroundColor: '#B644B2',
-        right: 20,
-    },
-    swipeText: {
-        color: 'white',
-        fontWeight: 'bold',
-        marginLeft: 8,
-        fontSize: 16,
-    },
-    helpText: {
-        position: 'absolute',
-        bottom: -80,
-        left: 0,
-        right: 0,
+    logoContainer: {
+        flexDirection: 'row',
         alignItems: 'center',
     },
-    helpTextContent: {
-        color: '#666',
+    logoText: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#6741d9',
+    },
+    cartButton: {
+        position: 'relative',
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: '#f0f0f0',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    badge: {
+        position: 'absolute',
+        top: -5,
+        right: -5,
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        backgroundColor: '#6741d9',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    badgeText: {
+        color: '#fff',
+        fontSize: 12,
+        fontWeight: 'bold',
+    },
+    content: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    helpTextContainer: {
+        paddingVertical: 15,
+        alignItems: 'center',
+    },
+    helpText: {
         fontSize: 14,
+        color: '#888',
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+    },
+    loadingText: {
+        marginTop: 20,
+        fontSize: 16,
+        color: '#666',
+    },
+    errorContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        padding: 20,
+    },
+    errorTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#333',
+        marginTop: 20,
+        marginBottom: 10,
+    },
+    errorText: {
+        fontSize: 16,
+        color: '#666',
+        textAlign: 'center',
+        marginBottom: 30,
+    },
+    retryButton: {
+        backgroundColor: '#6741d9',
+        paddingHorizontal: 30,
+        paddingVertical: 15,
+        borderRadius: 10,
+    },
+    retryButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    noMoreCardsContainer: {
+        width: '90%',
+        padding: 30,
+        backgroundColor: '#fff',
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        elevation: 5,
+    },
+    noMoreCardsIcon: {
+        marginBottom: 20,
+    },
+    noMoreCardsTitle: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 10,
+    },
+    noMoreCardsText: {
+        fontSize: 16,
+        color: '#666',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    refreshButton: {
+        backgroundColor: '#6741d9',
+        paddingHorizontal: 30,
+        paddingVertical: 15,
+        borderRadius: 10,
+    },
+    refreshButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });
-
-export default Index;
