@@ -32,7 +32,8 @@ export default function CartScreen() {
     const handleQuantityChange = (id: string, change: number) => {
         const item = items.find((item) => item.id === id);
         if (item) {
-            updateQuantity(id, item.quantity + change);
+            const qty = item.quantity ?? 1;
+            updateQuantity(id, qty + change);
         }
     };
 
@@ -133,7 +134,7 @@ export default function CartScreen() {
                             />
                         </TouchableOpacity>
 
-                        <Text style={styles.quantityText}>{item.quantity}</Text>
+                        <Text style={styles.quantityText}>{item.quantity ?? 1}</Text>
 
                         <TouchableOpacity
                             onPress={() => handleQuantityChange(item.id, 1)}
